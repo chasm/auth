@@ -6,13 +6,27 @@ class SiteController < ApplicationController
   end
 
   def login
-    if user = User.authenticate(params[:email], params[:password])
-      session[:user_id] = user.id
-      
-      redirect_to root_path
+    if params[:password].blank?
+      if user = User.find_by_email params[:email]
+        # This is a password reset
+        
+        # Set code (as a uuid) and expires_at (in a day or two) on User
+        # Send reset email with coded link to /register/:code
+      else
+        # This is a registration
+        
+        # Create a new user with email = email 
+        # Send registration email
+      end
     else
-      flash.now.alert = "Invalid email or password"
-      render "index"
+      if user = User.authenticate(params[:email], params[:password])
+        session[:user_id] = user.id
+      
+        redirect_to root_path
+      else
+        flash.now.alert = "Invalid email or password"
+        render "index"
+      end
     end
   end
 
